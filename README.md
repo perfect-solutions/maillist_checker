@@ -2,7 +2,7 @@
 Checker for mail list. It uses SMTP-protocol and 550 response for check the email is alive
 
 # Usage
-This command must be run on the works SMTP-outgount server.
+This command must be run on the works SMTP-outgoing server.
 
 Command usage:
 
