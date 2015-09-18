@@ -1,0 +1,77 @@
+#!/usr/bin/python
+
+import sys
+import re
+import dns.resolver
+import socket
+
+def getDomain(email):
+	domain = email.split("@")[1]
+	print domain
+	return domain
+
+def getMx(domain):
+	mxs = []
+	try:
+	    for x in dns.resolver.query(domain, 'MX'):
+	        mxs.append(x.to_text().split(" ")[1])
+	except:
+	    return []
+	return mxs
+
+def checkEmailOnServer(server, email, HELO):
+	try:
+	    TCP_IP = socket.gethostbyname(server)
+	    TCP_PORT = 25
+	    BUFFER_SIZE = 1024
+	    smtp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	    smtp.settimeout(10)
+	    smtp.connect((TCP_IP, TCP_PORT))
+	    smtp.recv(BUFFER_SIZE)
+	    smtp.send("HELO "+HELO+"\r\n")
+	    if smtp.recv(BUFFER_SIZE).split(" ")[0] != "250":
+		smtp.close()
+		return None
+	    smtp.send("MAIL FROM: <noreply@"+HELO+">\r\n")
+	    if smtp.recv(BUFFER_SIZE).split(" ")[0] != "250":
+		smtp.close()
+		return None
+	    smtp.send("RCPT TO: <"+email+">\r\n")
+	    status = smtp.recv(BUFFER_SIZE).split(" ")[0]
+	    if status == "550":
+		smtp.close()
+		return False
+	    elif status == "250":
+		smtp.close()
+		return True
+	    else:
+		smtp.close()
+		return None
+	except(socket.error):
+	    return None
+
+def checkEmailOnServerList(servers, email, HELO):
+	for server in servers:
+	    result = checkEmailOnServer(server, email, HELO)
+	    if result == True:
+		return True
+	    elif result == False:
+		return False
+	return False
+
+def usage():
+    print ""
+    print "	maillist_check (filename=maillist) (HELO domain=mx-1.example.com)"
+    print ""
+
+def main(maillist, HELO):
+    with open(maillist) as fdx:
+        for email in fdx:
+	    email = email.split("\n")[0]
+            if checkEmailOnServerList(getMx(getDomain(email)), email, HELO) == True:
+		print email
+
+if len(sys.argv)<3:
+    usage()
+else:
+    main(sys.argv[1], sys.argv[2])
