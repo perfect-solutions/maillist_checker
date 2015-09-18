@@ -1,5 +1,5 @@
 # maillist_checker
-Checker for mail list. It uses SMTP-protocol and 550 response for check the email is alive
+Checker for mail list. It uses SMTP-protocol and 550 response for check the email is live
 
 # Usage
 This command must be run on the works SMTP-outgoing server.
