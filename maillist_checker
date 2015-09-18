@@ -7,7 +7,6 @@ import socket
 
 def getDomain(email):
 	domain = email.split("@")[1]
-	print domain
 	return domain
 
 def getMx(domain):
