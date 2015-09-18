@@ -8,11 +8,14 @@ Command usage:
 
     maillist_check (filename=maillist) (HELO domain=mx-1.example.com)
     
-Command example:
+Usage example:
 
-    maillist_check ./users.txt smtp-o-1.example.com
+    maillist_check ./users.txt smtp-o-1.example.com > success.list
+    grep -v -x -f success.list users.txt > badbox.list
 
 "smtp-o-1.example.com" is valid HELO with PTR for current server.
+To file "sucess.list" will be put existing boxes.
+To file "badbox.list" will be put NOT existing boxes.
 
 # Example contents of users.txt
 
